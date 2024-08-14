@@ -1,4 +1,4 @@
-# **Description:
+# Description:
 This is my first SQL project, where I've created and executed a series of SQL queries to analyze data. The project includes basic operations like data retrieval and complex queries to demonstrate my understanding of SQL and database management.
 
 ## **SQL Sales and CRM Analysis**
