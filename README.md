@@ -10,7 +10,7 @@ sales analysis
 crm analysis
 category analysis
 
-I have uploaded a sql file with queries and a ppt which in last has key findings and conclusion.
+This project includes a SQL file containing all the queries used for data analysis, along with a PowerPoint presentation summarizing the key findings and conclusions.
 
 
 
