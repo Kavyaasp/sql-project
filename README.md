@@ -10,5 +10,7 @@ sales analysis
 crm analysis
 category analysis
 
+I have uploaded a sql file with queries and a ppt which in last has key findings and conclusion.
+
 
 
