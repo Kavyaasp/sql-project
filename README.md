@@ -12,5 +12,4 @@ category analysis
 
 This project includes a SQL file containing all the queries used for data analysis, along with a PowerPoint presentation summarizing the key findings and conclusions.
 
-here's the pdf link -https://github.com/Kavyaasp/sql-project/blob/main/SQL%20project%20sales%20analysis%20ppt..pdf
 
