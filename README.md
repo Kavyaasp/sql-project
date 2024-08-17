@@ -12,4 +12,3 @@ category analysis
 
 This project includes a SQL file containing all the queries used for data analysis, along with a PowerPoint presentation summarizing the key findings and conclusions.
 
-SQL project sales analysis ppt..pdf
