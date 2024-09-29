@@ -13,17 +13,21 @@ ORDER BY
 
 
 
+
+
+
 --find out the total sum of quantities sold under each order id 
 SELECT
-	A.ORDER_ID,
-	SUM(A.QUANTITY)
+	ORDER_ID,
+	SUM(QUANTITY)
 FROM
-	ORDER_DETAILS A
-	INNER JOIN ORDER_SUMMARY B ON A.ORDER_ID = B.ORDER_ID
+	ORDER_DETAILS
 GROUP BY
-	A.ORDER_ID
+	ORDER_ID
 ORDER BY
 	ORDER_ID;
+
+
 
 
 
@@ -58,9 +62,11 @@ UNION ALL
 
 
 
+
+
+
 --difference between monthly target and monthly sales by each category
 SELECT
-	ST.ORDER_DATE,
 	SQ.MONTHS,
 	ST.CATEGORY,
 	SQ.MONTHLY_TOTAL_SALES,
@@ -80,21 +86,6 @@ FROM
 		FROM
 			ORDER_DETAILS A
 			INNER JOIN ORDER_SUMMARY B ON A.ORDER_ID = B.ORDER_ID
-		WHERE
-			EXTRACT(
-				MONTH
-				FROM
-					B.ORDER_DATE
-			) IN (
-				SELECT
-					EXTRACT(
-						MONTH
-						FROM
-							ST.ORDER_DATE
-					)
-				FROM
-					SALES_TARGET ST
-			)
 		GROUP BY
 			EXTRACT(
 				YEAR
@@ -122,6 +113,7 @@ ORDER BY
 
 
 
+
 --Identify orders where the target wasnt met 
 SELECT
 	SBQ.MONTHS,
@@ -142,21 +134,6 @@ FROM
 		FROM
 			ORDER_SUMMARY B
 			INNER JOIN ORDER_DETAILS A ON A.ORDER_ID = B.ORDER_ID
-		WHERE
-			EXTRACT(
-				MONTH
-				FROM
-					ORDER_DATE
-			) IN (
-				SELECT
-					EXTRACT(
-						MONTH
-						FROM
-							ST.ORDER_DATE
-					)
-				FROM
-					SALES_TARGET ST
-			)
 		GROUP BY
 			MONTHS,
 			A.CATEGORY
@@ -174,6 +151,8 @@ ORDER BY
 
 
 
+
+
 --calculate the percentage of the highest monthly sales compared to the total yearly sales
 SELECT
 	(BC.TOTAL_SALES / AB.TOTAL_SALES_YEARLY) * 100
@@ -183,8 +162,8 @@ FROM
 			SUM(AMOUNT * QUANTITY) AS TOTAL_SALES_YEARLY
 		FROM
 			ORDER_DETAILS
-	) AB
-	CROSS JOIN (
+	) AB,
+	(
 		SELECT
 			SUM(A.AMOUNT * A.QUANTITY) AS TOTAL_SALES,
 			EXTRACT(
@@ -202,6 +181,9 @@ FROM
 		LIMIT
 			1
 	) BC;
+
+
+
 
 
 
@@ -258,6 +240,9 @@ ORDER BY
 
 
 
+
+
+
 --lowest sale city 
 SELECT
 	CITY
@@ -281,6 +266,9 @@ LIMIT
 
 
 
+
+
+
 --how many customers purchased more than once 
 SELECT
 	A.CUSTOMER_NAME,
@@ -296,6 +284,9 @@ HAVING
 	COUNT(DISTINCT (B.ORDER_ID)) > 1
 ORDER BY
 	FRQ DESC;
+
+
+
 
 
 
@@ -319,6 +310,8 @@ LIMIT
 
 
 
+
+
 --top 3 highest sales city
 SELECT
 	CITY
@@ -338,6 +331,9 @@ FROM
 	)
 LIMIT
 	3;
+
+
+
 
 
 
@@ -368,6 +364,8 @@ FROM
 
 
 
+
+
 --monthly sales by each category
 SELECT
 	A.CATEGORY,
@@ -394,6 +392,10 @@ ORDER BY
 
 
 
+
+
+
+
 --which category has generated the highest revenue 
 SELECT
 	SUM(AMOUNT * QUANTITY) AS TOTAL_SALES,
@@ -409,11 +411,13 @@ LIMIT
 
 
 
+
+
+
+
 --which category has highest sales in each month
 SELECT
 	CATEGORY,
-	TOTAL_SALES,
-	YEARS,
 	MONTHS
 FROM
 	(
@@ -454,6 +458,9 @@ ORDER BY
 
 
 
+
+
+
 --Identify the month with the highest sales for each category in the year
 SELECT
 	CATEGORY,
@@ -483,6 +490,9 @@ FROM
 	)
 WHERE
 	RANKS = 1;
+
+
+
 
 
 
