@@ -62,58 +62,6 @@ UNION ALL
 
 
 
-
-
-
---difference between monthly target and monthly sales by each category
-SELECT
-	SQ.MONTHS,
-	ST.CATEGORY,
-	SQ.MONTHLY_TOTAL_SALES,
-	ST.TARGET,
-	ST.TARGET - SQ.MONTHLY_TOTAL_SALES AS DIFFERENCE
-FROM
-	SALES_TARGET ST
-	LEFT JOIN (
-		SELECT
-			A.CATEGORY,
-			SUM(A.AMOUNT * A.QUANTITY) AS MONTHLY_TOTAL_SALES,
-			EXTRACT(
-				MONTH
-				FROM
-					B.ORDER_DATE
-			) AS MONTHS
-		FROM
-			ORDER_DETAILS A
-			INNER JOIN ORDER_SUMMARY B ON A.ORDER_ID = B.ORDER_ID
-		GROUP BY
-			EXTRACT(
-				YEAR
-				FROM
-					B.ORDER_DATE
-			),
-			MONTHS,
-			A.CATEGORY
-	) SQ ON EXTRACT(
-		MONTH
-		FROM
-			ST.ORDER_DATE
-	) = SQ.MONTHS
-	AND ST.CATEGORY = SQ.CATEGORY
-ORDER BY
-	EXTRACT(
-		YEAR
-		FROM
-			ST.ORDER_DATE
-	),
-	SQ.MONTHS,
-	ST.CATEGORY;
-
-
-
-
-
-
 --Identify orders where the target wasnt met 
 SELECT
 	SBQ.MONTHS,
@@ -181,64 +129,6 @@ FROM
 		LIMIT
 			1
 	) BC;
-
-
-
-
-
-
-
---List the top 3 customers with the highest total purchase amount for each month.
-SELECT
-	CUSTOMER_NAME,
-	TOTAL_SALES,
-	YEARS,
-	MONTHS,
-	SALES_RANK
-FROM
-	(
-		SELECT
-			OS.CUSTOMER_NAME,
-			SUM(OD.AMOUNT * OD.QUANTITY) AS TOTAL_SALES,
-			EXTRACT(
-				YEAR
-				FROM
-					OS.ORDER_DATE
-			) AS YEARS,
-			EXTRACT(
-				MONTH
-				FROM
-					OS.ORDER_DATE
-			) AS MONTHS,
-			RANK() OVER (
-				PARTITION BY
-					EXTRACT(
-						MONTH
-						FROM
-							OS.ORDER_DATE
-					)
-				ORDER BY
-					SUM(OD.AMOUNT * OD.QUANTITY) DESC
-			) AS SALES_RANK
-		FROM
-			ORDER_SUMMARY OS
-			INNER JOIN ORDER_DETAILS OD ON OS.ORDER_ID = OD.ORDER_ID
-		GROUP BY
-			YEARS,
-			MONTHS,
-			OS.CUSTOMER_NAME,
-			OS.STATE,
-			OS.CITY
-	)
-WHERE
-	SALES_RANK <= 3
-ORDER BY
-	YEARS,
-	MONTHS,
-	SALES_RANK;
-
-
-
 
 
 
@@ -414,7 +304,6 @@ LIMIT
 
 
 
-
 --which category has highest sales in each month
 SELECT
 	CATEGORY,
@@ -496,53 +385,3 @@ WHERE
 
 
 
---Determine the category with the highest growth in sales compared to the previous month.
-SELECT
-	CATEGORY,
-	MAX(NEXT_MS - TS) AS GROWTH
-FROM
-	(
-		SELECT
-			CATEGORY,
-			TS,
-			LEAD(TS) OVER (
-				PARTITION BY
-					CATEGORY
-				ORDER BY
-					CATEGORY
-			) AS NEXT_MS,
-			MONTHS
-		FROM
-			(
-				SELECT
-					A.CATEGORY,
-					SUM(A.AMOUNT * A.QUANTITY) AS TS,
-					EXTRACT(
-						YEAR
-						FROM
-							B.ORDER_DATE
-					) AS YEARS,
-					EXTRACT(
-						MONTH
-						FROM
-							B.ORDER_DATE
-					) AS MONTHS
-				FROM
-					ORDER_DETAILS A
-					INNER JOIN ORDER_SUMMARY B ON A.ORDER_ID = B.ORDER_ID
-				GROUP BY
-					YEARS,
-					MONTHS,
-					A.CATEGORY
-				ORDER BY
-					A.CATEGORY,
-					YEARS,
-					MONTHS
-			)
-	)
-GROUP BY
-	CATEGORY
-ORDER BY
-	GROWTH DESC
-LIMIT
-	1;
